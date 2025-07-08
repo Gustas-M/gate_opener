@@ -1,0 +1,6 @@
+../Core/Src/ring_buffer.c:42:16:RingBufferInit	4
+../Core/Src/ring_buffer.c:67:6:RingBufferIsEmpty	2
+../Core/Src/ring_buffer.c:75:6:RingBufferIsFull	2
+../Core/Src/ring_buffer.c:84:6:RingBufferEnqueue	4
+../Core/Src/ring_buffer.c:103:6:RingBufferDequeue	3
+../Core/Src/ring_buffer.c:115:6:RingBufferFree	2

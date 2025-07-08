@@ -1,0 +1,3 @@
+../Core/Src/heap_api.c:43:6:HEAP_API_Init	3
+../Core/Src/heap_api.c:56:7:HEAP_API_Alloc	7
+../Core/Src/heap_api.c:78:6:HEAP_API_Free	4
