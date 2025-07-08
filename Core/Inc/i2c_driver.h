@@ -21,6 +21,20 @@ typedef struct {
 	sI2cRegConfData_t reg_conf_data[MAX_CONF_COUNT];
 } sI2cConf_t;
 
+typedef struct {
+	double latitude;
+	double longitude;
+	char *phone_number;
+} sGpsData_t;
+
+const sGpsData_t static_gps_data[] = {
+		{
+				.latitude = 0.0,
+				.longitude = 0.0,
+				.phone_number = "+37000000000"
+		}
+};
+
 bool I2C_Driver_Init (eI2cPort_t i2c_port);
 bool I2C_Driver_Conf(eI2cPort_t i2c_port);
 bool I2C_Driver_Write (I2C_TypeDef *port, uint8_t address, uint8_t reg, uint8_t *buffer, uint32_t byte_count);

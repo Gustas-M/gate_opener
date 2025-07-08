@@ -2,6 +2,10 @@
 #include "stm32f4xx_ll_bus.h"
 #include "i2c_driver.h"
 
+#define GPS_APP_TASK_STACK_SIZE 512
+
+#define NO_THREAD_ARGUMENTS NULL
+
 typedef void (*EnableClock_t)(uint32_t periph);
 
 typedef struct {
@@ -19,8 +23,6 @@ typedef struct {
 	uint32_t clock;
 } sI2cDesc_t;
 
-
-
 const static sI2cDesc_t g_static_i2c_lut[eI2cPort_Last] = {
 	[eI2cPort_Gps] = {
 		.port = I2C1,
@@ -37,6 +39,20 @@ const static sI2cDesc_t g_static_i2c_lut[eI2cPort_Last] = {
 		.clock = LL_APB1_GRP1_PERIPH_I2C1
 	}
 };
+
+const static osThreadAttr_t g_static_gps_app_task_attr = {
+    .name = "Gps App Task",
+    .stack_size = LED_APP_TASK_STACK_SIZE,
+    .priority = (osPriority_t)osPriorityNormal
+};
+
+static osThreadId_t g_static_gps_app_task = NULL;
+
+static void GPS_APP_Task (void) {
+	while (1) {
+
+	}
+}
 
 bool I2C_Driver_Init (eI2cPort_t i2c_port) {
 	LL_I2C_InitTypeDef i2c_init_stuct = {0};
@@ -62,6 +78,17 @@ bool I2C_Driver_Init (eI2cPort_t i2c_port) {
 
 	LL_I2C_SetOwnAddress2(g_static_i2c_lut[i2c_port].port, 0);
 	LL_I2C_Enable(g_static_i2c_lut[i2c_port].port);
+
+	return true;
+}
+
+bool GPS_APP_Init (void) {
+	if (g_static_gps_app_task == NULL) {
+		g_static_gps_app_task = osThreadNew(GPS_APP_Task, NO_THREAD_ARGUMENTS, &g_static_gps_app_task_attr);
+		if (g_static_gps_app_task == NULL) {
+			return false;
+		}
+	}
 
 	return true;
 }
@@ -95,7 +122,6 @@ bool I2C_Driver_Write (I2C_TypeDef *port, uint8_t address, uint8_t reg, uint8_t 
     }
 
     while (!LL_I2C_IsActiveFlag_TXE(port)) {};
-//    while (!LL_I2C_IsActiveFlag_BTF(port)) {};
     LL_I2C_GenerateStopCondition(port); // stop
 
     return true;
