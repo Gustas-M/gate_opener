@@ -21,6 +21,7 @@
 
 #define USART1_BUFFER_SIZE 64
 #define USART2_BUFFER_SIZE 1024
+
 /**********************************************************************************************************************
  * Private typedef
  *********************************************************************************************************************/
@@ -59,7 +60,7 @@ const static osThreadAttr_t g_uart_api_task_attr = {
 };
 
 const static eUartApiDesc_t g_static_uart_api_lut[eUartApiPort_Last] = {
-    [eUartApiPort_Usart1] = {
+    [eUartApiPort_ModemUsart] = {
         .uart_port = eUartPort_Usart1,
         .buffer_size = USART1_BUFFER_SIZE,
         .queue_attributes = {
@@ -84,7 +85,7 @@ const static eUartApiDesc_t g_static_uart_api_lut[eUartApiPort_Last] = {
  *********************************************************************************************************************/
 static osThreadId_t g_uart_api_task_handle = NULL;
 static sUartApiTaskData_t g_dynamic_uart_api_lut[eUartApiPort_Last] = {
-    [eUartApiPort_Usart1] = {
+    [eUartApiPort_ModemUsart] = {
         .message_queue_id = NULL,
         .mutex_id = NULL,
         .buffer = NULL,
@@ -116,11 +117,9 @@ static void UART_API_Task (void *argument) {
 
             switch (g_dynamic_uart_api_lut[port].state) {
                 case eUartApiState_Initialize: {
-
                     g_dynamic_uart_api_lut[port].buffer = HEAP_API_Calloc(g_static_uart_api_lut[port].buffer_size, sizeof(char));
 
                     if (g_dynamic_uart_api_lut[port].buffer == NULL) {
-//                        DEBUG_API_Print(g_static_uart_api_lut[port].uart_port, "Failure to allocate memory for a buffer\n");
                         continue;
                     }
 
@@ -137,7 +136,6 @@ static void UART_API_Task (void *argument) {
                         if (g_dynamic_uart_api_lut[port].index >= g_static_uart_api_lut[port].buffer_size) {
                             memset(g_dynamic_uart_api_lut[port].buffer, 0, g_static_uart_api_lut[port].buffer_size);
                             g_dynamic_uart_api_lut[port].index = 0;
-//                            DEBUG_API_Print(g_static_uart_api_lut[port].uart_port, "Failed to find a delimiter before reaching max buffer size\n");
                             break;
                         }
 
@@ -159,7 +157,6 @@ static void UART_API_Task (void *argument) {
                     osStatus_t status = osMessageQueuePut(g_dynamic_uart_api_lut[port].message_queue_id, &message, MESSAGE_PRIORITY, osWaitForever);
 
                     if (status != osOK) {
-//                        DEBUG_API_Print(g_static_uart_api_lut[port].uart_port, "Failed to put message into the queue\n");
                         break;
                     }
 
@@ -167,7 +164,6 @@ static void UART_API_Task (void *argument) {
                     break;
                 }
                 default: {
-//                    DEBUG_API_Print(g_static_uart_api_lut[port].uart_port, "API Task state was not found\n");
                     break;
                 }
             }

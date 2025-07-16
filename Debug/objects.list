@@ -1,4 +1,6 @@
 "./Core/Src/freertos.o"
+"./Core/Src/gpio_driver.o"
+"./Core/Src/gps_app.o"
 "./Core/Src/heap_api.o"
 "./Core/Src/i2c_driver.o"
 "./Core/Src/main.o"

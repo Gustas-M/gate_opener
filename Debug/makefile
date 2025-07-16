@@ -64,8 +64,8 @@ all: main-build
 main-build: remote_gate_opener.elf secondary-outputs
 
 # Tool invocations
-remote_gate_opener.elf remote_gate_opener.map: $(OBJS) $(USER_OBJS) C:\Users\gusta\STM32CubeIDE\workspace_1.18.1\remote_gate_opener\STM32F401RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "remote_gate_opener.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\gusta\STM32CubeIDE\workspace_1.18.1\remote_gate_opener\STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="remote_gate_opener.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+remote_gate_opener.elf remote_gate_opener.map: $(OBJS) $(USER_OBJS) C:\Users\gusta\Desktop\gate_opener\gate_opener\STM32F401RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "remote_gate_opener.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\gusta\Desktop\gate_opener\gate_opener\STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="remote_gate_opener.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

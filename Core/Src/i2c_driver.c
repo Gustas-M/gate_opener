@@ -2,10 +2,6 @@
 #include "stm32f4xx_ll_bus.h"
 #include "i2c_driver.h"
 
-#define GPS_APP_TASK_STACK_SIZE 512
-
-#define NO_THREAD_ARGUMENTS NULL
-
 typedef void (*EnableClock_t)(uint32_t periph);
 
 typedef struct {
@@ -34,25 +30,11 @@ const static sI2cDesc_t g_static_i2c_lut[eI2cPort_Last] = {
 		.own_address = 0,
 		.type_acknowledge = LL_I2C_ACK,
 		.own_addr_size = LL_I2C_OWNADDRESS1_7BIT,
-		.dev_addr = 0x53,
+		.dev_addr = 0x42,
 		.enable_clock = LL_APB1_GRP1_EnableClock,
 		.clock = LL_APB1_GRP1_PERIPH_I2C1
 	}
 };
-
-const static osThreadAttr_t g_static_gps_app_task_attr = {
-    .name = "Gps App Task",
-    .stack_size = LED_APP_TASK_STACK_SIZE,
-    .priority = (osPriority_t)osPriorityNormal
-};
-
-static osThreadId_t g_static_gps_app_task = NULL;
-
-static void GPS_APP_Task (void) {
-	while (1) {
-
-	}
-}
 
 bool I2C_Driver_Init (eI2cPort_t i2c_port) {
 	LL_I2C_InitTypeDef i2c_init_stuct = {0};
@@ -82,87 +64,76 @@ bool I2C_Driver_Init (eI2cPort_t i2c_port) {
 	return true;
 }
 
-bool GPS_APP_Init (void) {
-	if (g_static_gps_app_task == NULL) {
-		g_static_gps_app_task = osThreadNew(GPS_APP_Task, NO_THREAD_ARGUMENTS, &g_static_gps_app_task_attr);
-		if (g_static_gps_app_task == NULL) {
-			return false;
-		}
-	}
-
-	return true;
-}
-
-bool I2C_Driver_Write (I2C_TypeDef *port, uint8_t address, uint8_t reg, uint8_t *buffer, uint32_t byte_count) {
-    if ((port == NULL) || (buffer == NULL) || (byte_count == 0)) {
+bool I2C_Driver_Write (eI2cPort_t i2c, uint8_t *buffer, size_t byte_count) {
+    if ((i2c >= eI2cPort_Last) || (buffer == NULL) || (byte_count == 0)) {
         return false;
     }
 
-    address = address << 1;
+    uint8_t address = g_static_i2c_lut[i2c].dev_addr << 1;
     uint8_t address_w = address | 0;
 
-    LL_I2C_GenerateStartCondition(port);
+    LL_I2C_GenerateStartCondition(g_static_i2c_lut[i2c].port);
+    while (!LL_I2C_IsActiveFlag_SB(g_static_i2c_lut[i2c].port)) {};
 
-    while (!LL_I2C_IsActiveFlag_SB(port)) {};
-
-    LL_I2C_TransmitData8(port, address_w);
-
-    while (!LL_I2C_IsActiveFlag_TXE(port)) {};
-
-    LL_I2C_TransmitData8(port, reg);
-
-    while (!LL_I2C_IsActiveFlag_ADDR(port)) {};
+    LL_I2C_TransmitData8(g_static_i2c_lut[i2c].port, address_w);
+    while (!LL_I2C_IsActiveFlag_ADDR(g_static_i2c_lut[i2c].port)) {};
+    LL_I2C_ClearFlag_ADDR(g_static_i2c_lut[i2c].port);
 
     while (byte_count > 0) {
-        while (!LL_I2C_IsActiveFlag_TXE(port)) {};
+        while (!LL_I2C_IsActiveFlag_TXE(g_static_i2c_lut[i2c].port)) {};
 
-        LL_I2C_TransmitData8(port, *buffer);
+        LL_I2C_TransmitData8(g_static_i2c_lut[i2c].port, *buffer);
         buffer++;
         byte_count--;
     }
 
-    while (!LL_I2C_IsActiveFlag_TXE(port)) {};
-    LL_I2C_GenerateStopCondition(port); // stop
+    while (!LL_I2C_IsActiveFlag_TXE(g_static_i2c_lut[i2c].port)) {};
+	while (!LL_I2C_IsActiveFlag_BTF(g_static_i2c_lut[i2c].port)) {};
+    LL_I2C_GenerateStopCondition(g_static_i2c_lut[i2c].port); // stop
 
     return true;
 }
 
 
-bool I2C_Driver_Read (uint8_t reg, I2C_TypeDef *port, uint8_t address, uint8_t *rec, size_t byte_count) {
-	if ((port == NULL) || (rec == NULL) || (byte_count == 0)) {
+bool I2C_Driver_Read (eI2cPort_t i2c, uint8_t *buffer, size_t byte_count) {
+	if ((i2c >= eI2cPort_Last) || (buffer == NULL) || (byte_count == 0)) {
 	        return false;
 	}
 
-	address = address << 1;
-	uint8_t address_w = address | 0;
+	uint8_t address = g_static_i2c_lut[i2c].dev_addr << 1;
 	uint8_t address_r = address | 1;
 
-	while (LL_I2C_IsActiveFlag_BUSY(I2C1));
+	while (LL_I2C_IsActiveFlag_BUSY(g_static_i2c_lut[i2c].port));
 
-	LL_I2C_GenerateStartCondition(I2C1);
-	while (!LL_I2C_IsActiveFlag_SB(I2C1));
+	LL_I2C_GenerateStartCondition(g_static_i2c_lut[i2c].port);
+	while (!LL_I2C_IsActiveFlag_SB(g_static_i2c_lut[i2c].port));
 
-	LL_I2C_TransmitData8(I2C1, address_w);
-	while (!LL_I2C_IsActiveFlag_ADDR(I2C1));
-	LL_I2C_ClearFlag_ADDR(port);
+	LL_I2C_TransmitData8(g_static_i2c_lut[i2c].port, address_r);
+	while (!LL_I2C_IsActiveFlag_ADDR(g_static_i2c_lut[i2c].port));
+	LL_I2C_ClearFlag_ADDR(g_static_i2c_lut[i2c].port);
 
-	while (!LL_I2C_IsActiveFlag_TXE(I2C1));
-	LL_I2C_TransmitData8(I2C1, reg);
-	while (!LL_I2C_IsActiveFlag_TXE(I2C1));
+	if (byte_count == 1) {
+		LL_I2C_AcknowledgeNextData(g_static_i2c_lut[i2c].port, LL_I2C_NACK);
+	}
 
-	LL_I2C_GenerateStopCondition(port);
-	LL_I2C_GenerateStartCondition(I2C1);
-	while (!LL_I2C_IsActiveFlag_SB(I2C1));
+	while (byte_count > 0) {
+		while (!LL_I2C_IsActiveFlag_RXNE(g_static_i2c_lut[i2c].port));
 
-	LL_I2C_TransmitData8(I2C1, address_r);
-	while (!LL_I2C_IsActiveFlag_ADDR(I2C1));
-	LL_I2C_AcknowledgeNextData(I2C1, LL_I2C_NACK);
-	LL_I2C_ClearFlag_ADDR(port);
+		*buffer = LL_I2C_ReceiveData8(g_static_i2c_lut[i2c].port);
 
-	while (!LL_I2C_IsActiveFlag_RXNE(I2C1));
-	*rec = LL_I2C_ReceiveData8(port);
+		if (byte_count - 2 == 0) {
+			LL_I2C_AcknowledgeNextData(g_static_i2c_lut[i2c].port, LL_I2C_NACK);
+		} else {
+			LL_I2C_AcknowledgeNextData(g_static_i2c_lut[i2c].port, LL_I2C_ACK);
+		}
 
-	LL_I2C_GenerateStopCondition(I2C1);
+		buffer++;
+		byte_count--;
+	}
+
+	LL_I2C_GenerateStopCondition(g_static_i2c_lut[i2c].port);
 
 	return true;
 }
+
+

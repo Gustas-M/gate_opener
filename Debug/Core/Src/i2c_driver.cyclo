@@ -4,6 +4,7 @@
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_i2c.h:657:22:LL_I2C_SetOwnAddress2	1
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_i2c.h:679:22:LL_I2C_DisableOwnAddress2	1
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_i2c.h:1236:26:LL_I2C_IsActiveFlag_TXE	1
+../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_i2c.h:1249:26:LL_I2C_IsActiveFlag_BTF	1
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_i2c.h:1262:26:LL_I2C_IsActiveFlag_RXNE	1
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_i2c.h:1275:26:LL_I2C_IsActiveFlag_SB	1
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_i2c.h:1288:26:LL_I2C_IsActiveFlag_ADDR	1
@@ -15,6 +16,6 @@
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_i2c.h:1835:25:LL_I2C_ReceiveData8	1
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_i2c.h:1847:22:LL_I2C_TransmitData8	1
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_bus.h:1185:22:LL_APB1_GRP1_EnableClock	1
-../Core/Src/i2c_driver.c:41:6:I2C_Driver_Init	2
-../Core/Src/i2c_driver.c:69:6:I2C_Driver_Write	10
-../Core/Src/i2c_driver.c:105:6:I2C_Driver_Read	12
+../Core/Src/i2c_driver.c:39:6:I2C_Driver_Init	2
+../Core/Src/i2c_driver.c:67:6:I2C_Driver_Write	10
+../Core/Src/i2c_driver.c:98:6:I2C_Driver_Read	11

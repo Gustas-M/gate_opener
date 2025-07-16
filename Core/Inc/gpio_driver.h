@@ -1,24 +1,30 @@
-#ifndef SOURCE_API_UART_API_H_
-#define SOURCE_API_UART_API_H_
+#ifndef SOURCE_DRIVER_GPIO_DRIVER_H_
+#define SOURCE_DRIVER_GPIO_DRIVER_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**********************************************************************************************************************
  * Includes
  *********************************************************************************************************************/
 #include <stdbool.h>
-#include <stdint.h>
-#include <string.h>
-#include "message.h"
 /**********************************************************************************************************************
  * Exported definitions and macros
  *********************************************************************************************************************/
-
+typedef enum {
+    eGpioPin_First = 0,
+    eGpioPin_DebugTx = eGpioPin_First,
+    eGpioPin_DebugRx,
+	eGpioPin_GpsScl,
+	eGpioPin_GpsSda,
+	eGpioPin_ModemTx,
+	eGpioPin_ModemRx,
+    eGpioPin_Last
+} eGpioPin_t;
 /**********************************************************************************************************************
  * Exported types
  *********************************************************************************************************************/
- typedef enum {
-     eUartApiPort_First = 0,
-     eUartApiPort_ModemUsart = eUartApiPort_First,
-     eUartApiPort_Last
- } eUartApiPort_t;
+
 /**********************************************************************************************************************
  * Exported variables
  *********************************************************************************************************************/
@@ -26,8 +32,13 @@
 /**********************************************************************************************************************
  * Prototypes of exported functions
  *********************************************************************************************************************/
-bool UART_API_Init (eUartApiPort_t port, uint32_t baudrate, uint8_t *delimiter, size_t delimiter_length);
-bool UART_API_Send (eUartApiPort_t port, sMessage_t *message, uint32_t wait_time);
-bool UART_API_Receive (eUartApiPort_t port, sMessage_t *message, uint32_t wait_time);
+bool GPIO_Driver_Init (void);
+bool GPIO_Driver_TogglePin (eGpioPin_t pin);
+bool GPIO_Driver_ReadPin (eGpioPin_t pin, bool *state);
+bool GPIO_Driver_WritePin (eGpioPin_t pin, bool state);
 
-#endif /* SOURCE_API_UART_API_H_ */
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* SOURCE_DRIVER_GPIO_DRIVER_H_ */

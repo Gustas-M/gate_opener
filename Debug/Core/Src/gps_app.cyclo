@@ -1,0 +1,6 @@
+../Core/Src/gps_app.c:56:13:GPS_APP_Task	6
+../Core/Src/gps_app.c:89:6:GPS_APP_Init	3
+../Core/Src/gps_app.c:100:13:UBX_MSG_Check	5
+../Core/Src/gps_app.c:112:16:CoordinatesConversion	1
+../Core/Src/gps_app.c:123:15:DegreesToRadians	1
+../Core/Src/gps_app.c:127:15:CalculateDistance	1

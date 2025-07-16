@@ -1,4 +1,5 @@
-../Core/Src/modem_api.c:59:13:MODEM_API_MakeCall	1
-../Core/Src/modem_api.c:67:13:MODEM_API_Task	2
-../Core/Src/modem_api.c:83:6:MODEM_API_Init	5
-../Core/Src/modem_api.c:104:6:MODEM_API_AddCall	3
+../Core/Src/modem_api.c:68:13:MODEM_API_Task	3
+../Core/Src/modem_api.c:85:6:MODEM_API_Init	6
+../Core/Src/modem_api.c:110:6:MODEM_API_AddCall	3
+../Core/Src/modem_api.c:122:13:MODEM_API_Check	2
+../Core/Src/modem_api.c:136:13:MODEM_API_MakeCall	2
